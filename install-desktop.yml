@@ -10,7 +10,7 @@
         state: latest
         update_cache: true
 
-    - name: Ensure ubuntu desktop is installed # noqa: package-latest
+    - name: Ensure ubuntu desktop is installed
       ansible.builtin.apt:
         name: "ubuntu-desktop"
 
