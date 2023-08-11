@@ -1,0 +1,19 @@
+---
+- name: Install standard software for Ubuntu Desktop
+  hosts: desktops
+  become: true
+
+  tasks:
+    - name: Ensure all packages and cache are updated # noqa: package-latest
+      ansible.builtin.apt:
+        name: "*"
+        state: latest
+        update_cache: true
+
+    - name: Ensure ubuntu desktop is installed # noqa: package-latest
+      ansible.builtin.apt:
+        name: "ubuntu-desktop"
+
+    - name: Display Reboot
+      ansible.builtin.debug:
+        msg: "Please reboot the machine and then run the install-software.yml playbook"

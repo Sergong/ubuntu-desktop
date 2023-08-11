@@ -4,23 +4,16 @@
   become: true
 
   tasks:
+    - name: Ensure pre-reqs are installed
+      ansible.builtin.apt:
+        name:
+          - software-properties-common
+          - apt-transport-https
+          - wget
+
     - name: Install the snap-store
       community.general.snap:
         name: snap-store
-        state: present
-
-    - name: Ensure all packages and cache are updated
-      ansible.builtin.apt:
-        name: "*"
-        state: latest
-        update_cache: true
-
-    - name: Ensure pre-reqs are installed
-      ansible.builtin.apt:
-        name: 
-          - software-properties-common 
-          - apt-transport-https 
-          - wget
         state: present
 
     - name: Ensure Microsoft GPG key is added
@@ -36,6 +29,4 @@
     - name: Ensure vs code is installed
       ansible.builtin.apt:
         name: "code"
-        state: latest
         update_cache: true
-
