@@ -1,0 +1,41 @@
+---
+- name: Install standard software for Ubuntu Desktop
+  hosts: desktops
+  become: true
+
+  tasks:
+    - name: Install the snap-store
+      community.general.snap:
+        name: snap-store
+        state: present
+
+    - name: Ensure all packages and cache are updated
+      ansible.builtin.apt:
+        name: "*"
+        state: latest
+        update_cache: true
+
+    - name: Ensure pre-reqs are installed
+      ansible.builtin.apt:
+        name: 
+          - software-properties-common 
+          - apt-transport-https 
+          - wget
+        state: present
+
+    - name: Ensure Microsoft GPG key is added
+      ansible.builtin.apt_key:
+        url: https://packages.microsoft.com/keys/microsoft.asc
+        state: present
+
+    - name: Ensure apt repo is added for vs code
+      ansible.builtin.apt_repository:
+        repo: "deb [arch=arm64] https://packages.microsoft.com/repos/code stable main"
+        state: present
+
+    - name: Ensure vs code is installed
+      ansible.builtin.apt:
+        name: "code"
+        state: latest
+        update_cache: true
+

@@ -1,0 +1,2 @@
+[desktops]
+sm-jammy	ansible_host=127.0.0.1 ansible_user=smeeuwsen ansible_connection=local
