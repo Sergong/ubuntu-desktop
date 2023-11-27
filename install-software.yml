@@ -46,11 +46,26 @@
         dest: /tmp
 
     - name: Ensure files are moved to /opt/1Password
-      ansible.builtin.shell: mv /tmp/1password-*/* /opt/1Password
+      ansible.builtin.shell: |
+        mv /tmp/1password-*/* /opt/1Password
+        /opt/1Password/after-install.sh
+      args:
+        chdir: /opt/1Password/
+        creates: 1password
+      register: install_1password_app
 
-    - name: Ensure 1Password installer is run
-      ansible.builtin.shell: /opt/1Password/after-install.sh
-      register: install_1password_result
+    - name: Ensure 1Password CLI for Arm64 is installed
+      ansible.builtin.get_url:
+        url: https://downloads.1password.com/linux/debian/arm64/stable/1password-cli-arm64-latest.deb
+        dest: /tmp
+
+    - name: Install 1password-cli
+      ansible.builtin.apt:
+        deb: /tmp/1password-cli-arm64-latest.deb
+      register: install_1password_cli
 
     - name: Ensure tmp files are removed
       ansible.builtin.shell: rm -rf /tmp/1password-*
+      when:
+        - not install_1password_app.failed
+        - not install_1password_cli.failed
