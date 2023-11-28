@@ -1,0 +1,25 @@
+---
+- name: Check whether a package called foobar is installed
+  ansible.builtin.debug:
+    msg: "{{ ansible_facts.packages['code'] | length }} versions of vscode are installed!"
+  when: "'code' in ansible_facts.packages"
+
+- name: Install VSCode
+  become: true
+  block:
+    - name: Ensure Microsoft GPG key is added
+      ansible.builtin.apt_key:
+        url: https://packages.microsoft.com/keys/microsoft.asc
+        state: present
+
+    - name: Ensure apt repo is added for vs code
+      ansible.builtin.apt_repository:
+        repo: "deb [arch=arm64] https://packages.microsoft.com/repos/code stable main"
+        state: present
+
+    - name: Ensure vs code is installed
+      ansible.builtin.apt:
+        name: "code"
+        update_cache: true
+
+  when: "not 'code' in ansible_facts.packages"

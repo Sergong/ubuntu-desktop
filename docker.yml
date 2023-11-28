@@ -1,0 +1,37 @@
+---
+- name: Install Docker tasks
+  become: true
+  block:
+    - name: Ensure Docker GPG key is added
+      ansible.builtin.apt_key:
+        url: https://download.docker.com/linux/ubuntu/gpg
+        state: present
+
+    - name: Ensure apt repo is added for Docker
+      ansible.builtin.apt_repository:
+        repo: "deb [arch=arm64] https://download.docker.com/linux/ubuntu {{ ansible_distribution_release }} stable"
+        filename: docker
+        state: present
+
+    - name: Ensure Docker is installed
+      ansible.builtin.apt:
+        name: 
+          - docker-ce
+          - docker-ce-cli
+          - containerd.io
+          - docker-buildx-plugin
+          - docker-compose-plugin
+        update_cache: true
+
+    - name: Ensure docker group exists
+      ansible.builtin.group:
+        name: docker
+        state: present
+
+    - name: Ensure the 'docker' group is appended to {{ my_user }}
+      ansible.builtin.user:
+        name: "{{ my_user }}"
+        groups: docker
+        append: true
+
+  when: "not 'docker-ce' in ansible_facts.packages"
